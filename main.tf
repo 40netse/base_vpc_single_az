@@ -28,7 +28,7 @@ locals {
 }
 
 module "vpc" {
-  source = "git::git@github.com:40netse/terraform-modules.git//aws_vpc"
+  source = "git::https://github.com/40netse/terraform-modules.git//aws_vpc"
 
   vpc_name                   = "${var.customer_prefix}-${var.environment}-${var.vpc_name_security}-vpc"
   vpc_cidr                   = var.vpc_cidr_security
