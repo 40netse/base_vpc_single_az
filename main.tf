@@ -5,7 +5,7 @@ locals {
 }
 
 provider "aws" {
-  region     = var.aws_region
+  region     = var.region
   default_tags {
     tags = merge(local.common_tags)
   }
@@ -13,7 +13,7 @@ provider "aws" {
 
 
 locals {
-  availability_zone = "${var.aws_region}${var.availability_zone}"
+  availability_zone = "${var.region}${var.availability_zone}"
 }
 
 locals {
