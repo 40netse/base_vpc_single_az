@@ -1,17 +1,13 @@
 locals {
     common_tags = {
-    Environment = var.environment
+    Environment = var.env
   }
-}
-
-locals {
-    id_tag = var.vpc_tag_key != "" ? tomap({(var.vpc_tag_key) = (var.vpc_tag_value)}) : {}
 }
 
 provider "aws" {
   region     = var.aws_region
   default_tags {
-    tags = merge(local.common_tags, local.id_tag)
+    tags = merge(local.common_tags)
   }
 }
 
@@ -30,7 +26,7 @@ locals {
 module "vpc" {
   source = "git::https://github.com/40netse/terraform-modules.git//aws_vpc"
 
-  vpc_name                   = "${var.customer_prefix}-${var.environment}-${var.vpc_name_security}-vpc"
+  vpc_name                   = "${var.cp}-${var.env}-${var.vpc_name_security}-vpc"
   vpc_cidr                   = var.vpc_cidr_security
 }
 
@@ -45,13 +41,13 @@ resource "aws_default_route_table" "route_public" {
 module "igw" {
   source = "git::https://github.com/40netse/terraform-modules.git//aws_igw"
 
-  igw_name                   = "${var.customer_prefix}-${var.environment}-igw"
+  igw_name                   = "${var.cp}-${var.env}-igw"
   vpc_id                     = module.vpc.vpc_id
 }
 
 module "public-subnet" {
   source = "git::https://github.com/40netse/terraform-modules.git//aws_subnet"
-  subnet_name = "${var.customer_prefix}-${var.environment}-${var.public_description}-subnet"
+  subnet_name = "${var.cp}-${var.env}-${var.public_description}-subnet"
 
   vpc_id                     = module.vpc.vpc_id
   availability_zone          = local.availability_zone
@@ -62,7 +58,7 @@ module "public-subnet" {
 
 module "private-subnet" {
   source = "git::https://github.com/40netse/terraform-modules.git//aws_subnet"
-  subnet_name = "${var.customer_prefix}-${var.environment}-${var.private_description}-subnet"
+  subnet_name = "${var.cp}-${var.env}-${var.private_description}-subnet"
 
   vpc_id            = module.vpc.vpc_id
   availability_zone = local.availability_zone
@@ -72,7 +68,7 @@ module "private-subnet" {
 
 module "public_route_table" {
   source  = "git::https://github.com/40netse/terraform-modules.git//aws_route_table"
-  rt_name = "${var.customer_prefix}-${var.environment}-public-rt"
+  rt_name = "${var.cp}-${var.env}-public-rt"
 
   vpc_id                     = module.vpc.vpc_id
   gateway_route              = 1
@@ -81,7 +77,7 @@ module "public_route_table" {
 
 module "private_route_table" {
   source  = "git::https://github.com/40netse/terraform-modules.git//aws_route_table"
-  rt_name = "${var.customer_prefix}-${var.environment}-${var.private_description}-rt"
+  rt_name = "${var.cp}-${var.env}-${var.private_description}-rt"
 
   vpc_id                     = module.vpc.vpc_id
 }
